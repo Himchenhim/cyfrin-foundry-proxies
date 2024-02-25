@@ -1,66 +1,21 @@
-## Foundry
+# Main goal
+Main objective of realizing this project is to learn how proxies/upgrades_of_smart_contracts work. Also, it is nice opportunity to know how it is realized in practice, not just in theory and on images.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+I have learn, that openzeppelin library has already implemented a lot of Smart Contracts to help developers to implement their own proxies safely.
 
-Foundry consists of:
+# Proxy terminology:
+The implementation contract = has all our code of our protocol. When we fix bugs, we launch a brand new implementation contract.
+The proxy contract = which point to which implementation is the "correct" one, and routes everyone's function calls to the contract. MAIN STORAGE
+The user = make calls to proxy
+The admin = the user, who upgrades to new implementation contracts 
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-## Documentation
+# Why initialize() is used in implementation contracts and not constructor()
 
-https://book.getfoundry.sh/
+When (implementation) smart contract is deployed, constructor is called -> storage of smart contract is updated.
 
-## Usage
+HOWEVER, in implementation smart contract we don't want to update storage. We want to proxy contract to update storage.
 
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Okay, but how we can deploy implementation smart contract NOT CHANGING its storage, but to change storage of proxy contract?
+-> deploying implementation smart contract without empty constructor + use `initialize()` function as a constructor.
+the usage of `initialize()` is best practice and the main goal: update storage of proxy smart contract via using `initialize()` func of implementation smart contract WITHOUT updating any storage of implementation smart contract    
